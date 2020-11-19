@@ -9,6 +9,7 @@ class ConditionalValidatorMixin(Model):
     """
     Checks conditional fields according to schema.\n
     Structure of schema is as follows:\n
+    ```python
     conditional_schema = {
         'field': { # Name of field that contains the controlling conditions.
             'error_message_field_name': "Field", # What you want to call the field in the validation message.
@@ -21,6 +22,7 @@ class ConditionalValidatorMixin(Model):
             }
         }
     }
+    ```
     IMPORTANT
     1. A non-specified 'field_value' will not check any fields.
     2. A 'conditional_field' not specified in 'include' or 'exclude' will not be checked for that specific field_value.
@@ -33,7 +35,7 @@ class ConditionalValidatorMixin(Model):
     
     def conditional_clean(self):
         """
-        Conditional Cleaning function.
+        Conditional cleaning function.
         """
         c_schema = self.conditional_schema
         e_array = defaultdict(list)
