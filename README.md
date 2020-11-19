@@ -4,7 +4,7 @@ A custom mixin for Django models to validate model fields according to the value
 ## Usage
 Import `models_custom.py` into your `models.py` using:
 ```python
-from .models_custom import ConditionalValidatorMixin
+from .conditional_validator_mixin import ConditionalValidatorMixin
 ```
 Use like any other model Mixin and add a `conditional_schema` property:
 ```python
