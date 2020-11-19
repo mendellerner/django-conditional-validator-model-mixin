@@ -1,10 +1,11 @@
 from collections import defaultdict
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db.models import Model
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import EMPTY_VALUES
 
 # Create your models here.
-class ConditionalValidatorMixin(models.Model):
+class ConditionalValidatorMixin(Model):
     """
     Checks conditional fields according to schema.\n
     Structure of schema is as follows:\n
@@ -38,18 +39,18 @@ class ConditionalValidatorMixin(models.Model):
         e_array = defaultdict(list)
         for field in c_schema: # Iterate through rules for each field
             field_val = self.__getattribute__(field)
-            if field_val == '' or field_val == None:
+            if field_val in EMPTY_VALUES:
                 return
-            if not hasattr(c_schema[field]['field_values'], field_val):
-                return
+            if not field_val in c_schema[field]['field_values']:
+                return # No validation rules set
 
             e_str = lambda x: f'Field {x} when ' + c_schema[field]['error_message_field_name'] + ' = "' + c_schema[field]['field_values'][field_val]['error_message_field_value'] + '"'
             try:
                 for f in c_schema[field]['field_values'][field_val]['include']:
-                    if not self.__getattribute__(f):
+                    if self.__getattribute__(f) in EMPTY_VALUES:
                         e_array[f].append(_(e_str('is required')))
                 for f in c_schema[field]['field_values'][field_val]['exclude']:
-                    if self.__getattribute__(f):
+                    if not self.__getattribute__(f) in EMPTY_VALUES:
                         e_array[f].append(_(e_str('must be empty')))
             except AttributeError:
                 raise AttributeError
